@@ -1,0 +1,65 @@
+Double_negation (b: Bool) : (Equal Bool (Bool.not (Bool.not b)) b)
+Double_negation Bool.true = Equal.refl
+Double_negation Bool.false = Equal.refl
+
+And_true_b (b: Bool) : (Equal Bool (Bool.and Bool.true b) b)
+And_true_b b = Equal.refl
+
+And_b_true (b: Bool) : (Equal Bool (Bool.and b Bool.true) b)
+And_b_true Bool.true = Equal.refl
+And_b_true Bool.false = Equal.refl
+
+Right_and_b_true (b: Bool) : (Equal Bool (Bool.and b Bool.true) b)
+Right_and_b_true Bool.true = Equal.refl
+Right_and_b_true Bool.false = Equal.refl
+// TODO: Check mirror
+
+
+
+// -----------------------------------------
+// Exercises 1
+// -----------------------------------------
+// TODO: ver se precisa das anotações de tipo
+
+And_false_b (b: Bool) : (Equal Bool (Bool.and Bool.false b) Bool.false)
+And_false_b b = Equal.refl
+
+And_b_false (b: Bool) : (Equal Bool (Bool.and b Bool.false) Bool.false)
+And_b_false Bool.true = Equal.refl
+And_b_false Bool.false = Equal.refl
+
+Or_true_b (b: Bool) : (Equal Bool (Bool.or Bool.true b) Bool.true)
+Or_true_b b = Equal.refl
+
+Or_b_true (b: Bool) : (Equal Bool (Bool.or b Bool.true) Bool.true)
+Or_b_true Bool.true = Equal.refl
+Or_b_true Bool.false = Equal.refl
+
+Or_false_b (b: Bool) : (Equal (Bool.or Bool.false b) b)
+Or_false_b b = Equal.refl
+
+Or_b_false (b: Bool) : (Equal (Bool.or b Bool.false) b)
+Or_b_false Bool.true = Equal.refl
+Or_b_false Bool.false = Equal.refl
+
+Eql_b_b (b: Bool) : (Equal (Bool.equal b b) Bool.true)
+Eql_b_b Bool.true = Equal.refl
+Eql_b_b Bool.false = Equal.refl
+
+Demorgan_0 (a: Bool) (b: Bool) : (Equal (Bool.not (Bool.and a b)) (Bool.or (Bool.not a) (Bool.not b)))
+Demorgan_0 Bool.true b = Equal.refl
+Demorgan_0 Bool.false b = Equal.refl
+
+Demorgan_1 (a: Bool) (b: Bool) : (Equal (Bool.not (Bool.or a b)) (Bool.and (Bool.not a) (Bool.not b)))
+Demorgan_1 Bool.true b = Equal.refl
+Demorgan_1 Bool.false b = Equal.refl
+
+
+
+// -------------------------------
+
+// -------------------------------
+
+// Half_double_theorem (n: Nat) : (Equal Nat (Nat.half (Nat.double n)) n)
+// Half_double_theorem Nat.zero     = Equal.refl
+// Half_double_theorem (Nat.succ m) = 
