@@ -9,17 +9,14 @@ And_b_true (b: Bool) : (Equal Bool (Bool.and b Bool.true) b)
 And_b_true Bool.true = Equal.refl
 And_b_true Bool.false = Equal.refl
 
-Right_and_b_true (b: Bool) : (Equal Bool (Bool.and b Bool.true) b)
-Right_and_b_true Bool.true = Equal.refl
-Right_and_b_true Bool.false = Equal.refl
-// TODO: Check mirror
+Right_and_b_true (b: Bool) : (Equal Bool b (Bool.and b Bool.true))
+Right_and_b_true b = Equal.mirror (And_b_true b)
 
 
 
 // -----------------------------------------
 // Exercises 1
 // -----------------------------------------
-// TODO: ver se precisa das anotações de tipo
 
 And_false_b (b: Bool) : (Equal Bool (Bool.and Bool.false b) Bool.false)
 And_false_b b = Equal.refl
@@ -57,9 +54,163 @@ Demorgan_1 Bool.false b = Equal.refl
 
 
 // -------------------------------
-
+// 
 // -------------------------------
 
-// Half_double_theorem (n: Nat) : (Equal Nat (Nat.half (Nat.double n)) n)
-// Half_double_theorem Nat.zero     = Equal.refl
-// Half_double_theorem (Nat.succ m) = 
+Half_double_theorem (n: Nat) : (Equal Nat (Nat.half (Nat.double n)) n)
+Half_double_theorem Nat.zero     = Equal.refl
+Half_double_theorem (Nat.succ m) =
+    let ind = Half_double_theorem m
+    let app = Equal.apply (x => Nat.succ x) ind
+    app
+
+Add_0_n (n: Nat) : (Equal Nat (Nat.add Nat.zero n) n)
+Add_0_n Nat.zero     = Equal.refl
+Add_0_n (Nat.succ m) = Equal.refl
+
+Add_n_0 (n: Nat) : (Equal Nat (Nat.add n Nat.zero) n)
+Add_n_0 Nat.zero     = Equal.refl
+Add_n_0 (Nat.succ m) = 
+    let ind = Add_n_0 m
+    let app = Equal.apply (x => Nat.succ x) ind
+    app
+
+// -------------------------------------------------
+// Exercises 2
+// -------------------------------------------------
+
+Lte_0_n (n: Nat) : Equal Bool (Nat.lte Nat.zero n) Bool.true
+Lte_0_n Nat.zero     = Equal.refl
+Lte_0_n (Nat.succ m) = Equal.refl
+
+
+Gte_n_0 (n: Nat) : Equal Bool (Nat.gte n Nat.zero) Bool.true
+Gte_n_0 Nat.zero     = Equal.refl
+Gte_n_0 (Nat.succ m) = Equal.refl
+
+
+Eql_n_n (n: Nat) : Equal Bool (Nat.equal n n) Bool.true
+Eql_n_n Nat.zero     = Equal.refl
+Eql_n_n (Nat.succ m) = Eql_n_n m
+
+
+Is_even_double_n (n: Nat) : Equal (Nat.is_even (Nat.double n)) Bool.true
+Is_even_double_n Nat.zero     = Equal.refl
+Is_even_double_n (Nat.succ m) =
+    let ind = Is_even_double_n m
+    let app = Equal.apply (x => Bool.not (Bool.not x)) ind
+    app
+
+
+Gte_succ_n_0 (n: Nat) : Equal (Nat.gte (Nat.succ n) Nat.zero) Bool.true
+Gte_succ_n_0 Nat.zero     = Equal.refl
+Gte_succ_n_0 (Nat.succ m) = Equal.refl
+
+
+Gte_succ_n_n (n: Nat) : Equal (Nat.gte (Nat.succ n) n) Bool.true
+Gte_succ_n_n Nat.zero     = Equal.refl
+Gte_succ_n_n (Nat.succ m) = Gte_succ_n_n m
+
+
+// -------------------------------------------------------------
+// 
+// -------------------------------------------------------------
+
+One_neq_0 (e : Equal (Nat.succ Nat.zero) Nat.zero) : Empty
+One_neq_0 e = 
+    let a = Equal.apply (x => (Nat.equal (Nat.succ Nat.zero) x)) e
+    Bool.true_not_false a
+
+
+Three_neq_two (e: Equal (U60.to_nat 3) (U60.to_nat 2)) : Empty
+Three_neq_two e = 
+    let a = Equal.apply (x => Nat.equal (U60.to_nat 3) x) e
+    Bool.true_not_false a
+
+
+Not_a_neq_a (b : Bool) (e : Equal b (Bool.not b)) : Empty
+Not_a_neq_a Bool.true e = Bool.true_not_false e
+Not_a_neq_a Bool.false e = Bool.true_not_false (Equal.mirror e)
+
+
+// ------------------------------------------------------------
+// Exercises 3
+// ------------------------------------------------------------
+
+Or_true_a_neq_false (a: Bool) (e: Equal (Bool.or Bool.true a) Bool.false) : Empty
+Or_true_a_neq_false a e = Bool.true_not_false e
+
+
+Or_a_true_neq_false (a: Bool) (e: Equal (Bool.or a Bool.true) Bool.false) : Empty
+Or_a_true_neq_false Bool.true e = Bool.true_not_false e
+Or_a_true_neq_false Bool.false e = Bool.true_not_false e
+
+
+And_false_a_neq_true (a: Bool) (e: Equal (Bool.and Bool.false a) Bool.true) : Empty
+And_false_a_neq_true a e = Bool.true_not_false (Equal.mirror e)
+
+
+And_a_false_neq_true (a: Bool) (e: Equal (Bool.and a Bool.false) Bool.true) : Empty
+And_a_false_neq_true Bool.false e = Bool.true_not_false (Equal.mirror e)
+And_a_false_neq_true Bool.true e = Bool.true_not_false (Equal.mirror e)
+
+
+// ------------------------------------------------------------
+// Boss Fight
+// ------------------------------------------------------------
+
+Add_succ_n_m (n: Nat) (m: Nat) : Equal (Nat.add (Nat.succ n) m) (Nat.succ (Nat.add n m))
+Add_succ_n_m Nat.zero     Nat.zero     = Equal.refl
+Add_succ_n_m Nat.zero     (Nat.succ m) = Equal.refl
+Add_succ_n_m (Nat.succ n) Nat.zero     = Equal.refl
+Add_succ_n_m (Nat.succ n) (Nat.succ m) = Equal.refl
+
+
+Add_n_succ_m (n: Nat) (m: Nat) : Equal (Nat.add n (Nat.succ m)) (Nat.succ (Nat.add n m))
+Add_n_succ_m Nat.zero     Nat.zero     = Equal.refl
+Add_n_succ_m Nat.zero     (Nat.succ m) = Equal.refl
+Add_n_succ_m (Nat.succ a) Nat.zero     = 
+    let ind = Add_n_succ_m a Nat.zero
+    Equal.apply (x => (Nat.succ x)) ind
+Add_n_succ_m (Nat.succ a) (Nat.succ b) = 
+    let ind = Add_n_succ_m a (Nat.succ b)
+    Equal.apply (x => (Nat.succ x)) ind
+
+
+Add_a_b (a: Nat) (b: Nat) : Equal (Nat.add a b) (Nat.add b a)
+Add_a_b Nat.zero     Nat.zero     = Equal.refl
+Add_a_b Nat.zero     (Nat.succ n) = 
+    let ind = Add_a_b Nat.zero n
+    Equal.apply (x => Nat.succ x) ind
+Add_a_b (Nat.succ m) Nat.zero     = 
+    let ind = Add_a_b m Nat.zero 
+    Equal.apply (x => Nat.succ x) ind
+// Add_a_b (Nat.succ m) (Nat.succ n) = 
+    // let x = Add_0_n n
+    // let ind = Add_a_b m n
+    // let app = Equal.apply (x => Nat.succ (Nat.succ x)) ind
+    // let rew = Equal.rewrite app (x => Bool.if Type x Unit Empty) ?
+    // ?
+
+
+Succ_n_neq_n (n: Nat) (e: Equal Nat (Nat.succ n) n) : Empty
+Succ_n_neq_n Nat.zero e = 
+    let a = Equal.apply (x => Nat.equal Nat.zero x) e
+    Bool.true_not_false (Equal.mirror a)
+Succ_n_neq_n (Nat.succ m) e = 
+    ?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
