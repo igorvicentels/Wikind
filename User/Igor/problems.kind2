@@ -129,9 +129,11 @@ Problems.t22 n e = Equal.apply (x => Nat.succ x) e
 
 // Problems.t23 (n: Nat) (m: Nat) (e: Equal (Nat.equal n m) Bool.true): (Equal n m)
 // Problems.t23 n m e =
-//     let a = Equal.rewrite e (x => Equal _ x m) Equal.refl
+//     let a = Equal.rewrite e (x => Equal x m) (Equal n m)
 //     ?
 
+Problems.t23.alt (n: Nat) (m: Nat) (e: Equal Nat n m): (Equal n m)
+Problems.t23.alt n m e = Equal.rewrite e (x => Equal n x) Equal.refl
 
 Problems.t24 (xs: List Nat) : (Equal Bool (Nat.gtn(List.length Nat (List.cons Nat (Nat.succ Nat.zero) xs)) Nat.zero) Bool.true)
 Problems.t24 xs = Equal.refl
@@ -170,8 +172,16 @@ Problems.t34 (a: Nat) (b: Nat)  (e:Equal a b):  Equal Nat (b) (a)
 Problems.t34 a b e = Equal.mirror e
 
 Problems.t35 (a: Nat) (b: Nat) (c: Nat) (e0: Equal a b) (e1: Equal b c): Equal Nat (a) (c) 
+Problems.t35 a b c e1 e2 = Equal.rewrite e2 (x => Equal a x) e1
 
 Problems.t36 (a: Nat) (f: Nat -> Type) (p: (f a)) : f (Nat.same a)
+
+List.reverse.involutive.aux <a> (xs: List a) (ys: List a) : Equal (List.reverse.go (List.reverse.go xs ys) []) (List.reverse.go ys xs)
+List.reverse.involutive.aux a (List.nil t)            ys = Equal.refl
+List.reverse.involutive.aux a (List.cons t head tail) ys = List.reverse.involutive.aux a tail (List.cons t head ys)
+
+List.reverse.involutive <a> (xs: List a) : Equal (List.reverse (List.reverse xs)) xs
+List.reverse.involutive a xs = List.reverse.involutive.aux xs []
 
 Main {
   Nat.ltn (Nat.succ Nat.zero)  Nat.zero

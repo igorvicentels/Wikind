@@ -1,0 +1,278 @@
+// Definição do tipo Bool
+Bool : Type
+Bool.false : Bool
+Bool.true  : Bool
+
+B.not (b: Bool) : Bool
+B.not Bool.false = Bool.true
+B.not Bool.true  = Bool.false
+
+B.and (b1: Bool) (b2: Bool) : Bool
+B.and Bool.true  b = b
+B.and Bool.false b = Bool.false
+
+B.or (b1: Bool) (b2: Bool) : Bool
+B.or Bool.true  b = Bool.true
+B.or Bool.false b = b
+
+
+
+// Unit tests
+Test.B.or.1 : Equal (B.or Bool.true Bool.false) Bool.true
+Test.B.or.1 = Equal.refl
+
+Test.B.or.2 : Equal (B.or Bool.false Bool.false) Bool.false
+Test.B.or.2 = Equal.refl
+
+Test.B.or.3 : Equal (B.or Bool.false Bool.true) Bool.true
+Test.B.or.3 = Equal.refl
+
+Test.B.or.4 : Equal (B.or Bool.true Bool.true) Bool.true
+Test.B.or.4 = Equal.refl
+
+
+
+// Exercise 3.0.1
+B.nand (b1: Bool) (b2: Bool) : Bool
+B.nand Bool.false b = Bool.true
+B.nand Bool.true  b = B.not b
+
+Test.B.nand.1 : Equal (B.nand Bool.true Bool.false) Bool.true
+Test.B.nand.1 = Equal.refl
+
+Test.B.nand.2 : Equal (B.nand Bool.false Bool.false) Bool.true
+Test.B.nand.2 = Equal.refl
+
+Test.B.nand.3 : Equal (B.nand Bool.false Bool.true) Bool.true
+Test.B.nand.3 = Equal.refl
+
+Test.B.nand.4 : Equal (B.nand Bool.true Bool.true) Bool.false
+Test.B.nand.4 = Equal.refl
+
+
+
+B.and3 (b1: Bool) (b2: Bool) (b3: Bool) : Bool
+B.and3 Bool.true  b2 b3 = B.and b2 b3
+B.and3 Bool.false b2 b3 = Bool.false
+
+Test.B.and3.1 : Equal (B.and3 Bool.true Bool.true Bool.true) Bool.true
+Test.B.and3.1 = Equal.refl
+
+Test.B.and3.2 : Equal (B.and3 Bool.false Bool.true Bool.true) Bool.false
+Test.B.and3.2 = Equal.refl
+
+Test.B.and3.3 : Equal (B.and3 Bool.true Bool.false Bool.true) Bool.false
+Test.B.and3.3 = Equal.refl
+
+Test.B.and3.4 : Equal (B.and3 Bool.true Bool.true Bool.false) Bool.false
+Test.B.and3.4 = Equal.refl
+
+
+
+// 4. Function Types
+
+
+
+// --------------------------
+// 6. Numbers
+// --------------------------
+
+// Definição de Nat
+Nat: Type
+Nat.zero: Nat
+Nat.succ (pred: Nat): Nat
+
+
+N.pred (n: Nat): Nat
+N.pred Nat.zero     = Nat.zero
+N.pred (Nat.succ a) = a
+
+N.minus_two (n: Nat) : Nat
+N.minus_two Nat.zero                = Nat.zero
+N.minus_two (Nat.succ Nat.zero)     = Nat.zero
+N.minus_two (Nat.succ (Nat.succ a)) = a
+
+N.even (n: Nat) : Bool
+N.even Nat.zero                = Bool.true
+N.even (Nat.succ Nat.zero)     = Bool.false
+N.even (Nat.succ (Nat.succ a)) = N.even a
+
+N.odd (n: Nat) : Bool
+N.odd n = Bool.not (N.even n)
+
+Test.N.odd.1 : Equal (N.odd (Nat.succ Nat.zero)) Bool.true
+Test.N.odd.1 = Equal.refl
+
+Test.N.odd.2 : Equal (N.odd (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero))))) Bool.false
+Test.N.odd.2 = Equal.refl
+
+N.plus (n: Nat) (m: Nat) : Nat
+N.plus Nat.zero     m = m
+N.plus (Nat.succ k) m = Nat.succ (N.plus k m)
+
+N.mult (n: Nat) (m: Nat) : Nat
+N.mult Nat.zero     m = Nat.zero
+N.mult (Nat.succ k) m = N.plus m (N.mult k m)
+
+Test.Mult.1: (Equal (N.mult (U60.to_nat 3) (U60.to_nat 3)) (U60.to_nat 9))
+Test.Mult.1 = Equal.refl
+
+N.minus (n: Nat) (m: Nat) : Nat
+N.minus Nat.zero     m            = Nat.zero
+N.minus n            Nat.zero     = n
+N.minus (Nat.succ k) (Nat.succ j) = N.minus k j
+
+N.exp (base: Nat) (power: Nat) : Nat
+N.exp base Nat.zero     = Nat.succ Nat.zero
+N.exp base (Nat.succ k) = N.mult base (N.exp base k)
+
+
+// 6.0.1. Exercise
+
+N.factorial (n: Nat) : Nat
+N.factorial Nat.zero     = Nat.succ Nat.zero
+N.factorial (Nat.succ k) = N.mult (Nat.succ k) (N.factorial k)
+
+Test.N.factorial.1 : 
+    (Equal 
+        (N.factorial (Nat.succ (Nat.succ (Nat.succ Nat.zero)))) 
+        (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero)))))))
+Test.N.factorial.1 = Equal.refl
+
+Test.N.factorial.2 : 
+    (Equal 
+        (N.factorial (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero)))))
+        (N.mult 
+            (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero))))))
+            (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero))))))
+Test.N.factorial.2 = Equal.refl
+
+
+N.equal (n: Nat) (m: Nat) : Bool
+N.equal Nat.zero     Nat.zero     = Bool.true
+N.equal Nat.zero     (Nat.succ j) = Bool.false
+N.equal (Nat.succ k) Nat.zero     = Bool.false
+N.equal (Nat.succ k) (Nat.succ j) = N.equal k j
+
+N.lte (n: Nat) (m: Nat) : Bool
+N.lte Nat.zero     m            = Bool.true
+N.lte (Nat.succ k) Nat.zero     = Bool.false
+N.lte (Nat.succ k) (Nat.succ j) = N.lte k j
+
+Test.N.lte.1 : Equal (N.lte (U60.to_nat 2) (U60.to_nat 2)) Bool.true
+Test.N.lte.1 = Equal.refl
+
+Test.N.lte.2 : Equal (N.lte (U60.to_nat 2) (U60.to_nat 4)) Bool.true
+Test.N.lte.2 = Equal.refl
+
+Test.N.lte.3 : Equal (N.lte (U60.to_nat 4) (U60.to_nat 2)) Bool.false
+Test.N.lte.3 = Equal.refl
+
+
+
+// 6.02 Exercises
+N.blt_nat (n: Nat) (m: Nat) : Bool
+N.blt_nat n            Nat.zero     = Bool.false
+N.blt_nat Nat.zero     (Nat.succ j) = Bool.true
+N.blt_nat (Nat.succ k) (Nat.succ j) = N.blt_nat k j
+
+Test.N.blt_nat.1 : Equal (N.blt_nat (U60.to_nat 2) (U60.to_nat 2)) Bool.false
+Test.N.blt_nat.1 = Equal.refl
+
+Test.N.blt_nat.2 : Equal (N.blt_nat (U60.to_nat 2) (U60.to_nat 4)) Bool.true
+Test.N.blt_nat.2 = Equal.refl
+
+Test.N.blt_nat.3 : Equal (N.blt_nat (U60.to_nat 4) (U60.to_nat 2)) Bool.false
+Test.N.blt_nat.3 = Equal.refl
+
+
+// --------------------------
+// 7. Proof by simplification
+// --------------------------
+
+N.plus_Z_n (n: Nat) : Equal (N.plus Nat.zero n) n
+N.plus_Z_n n = Equal.refl
+
+N.plus_1_l (n: Nat) : Equal (N.plus (Nat.succ Nat.zero) n) (Nat.succ n)
+N.plus_1_l n = Equal.refl
+
+N.mult_0_l (n: Nat) : Equal (N.mult Nat.zero n) Nat.zero
+N.mult_0_l n = Equal.refl 
+
+
+// --------------------------
+// 8. Proof by rewriting
+// --------------------------
+
+N.plus_id_example (n: Nat) (m: Nat) (e : Equal n m) : Equal (N.plus n n) (N.plus m m)
+N.plus_id_example n m e = Equal.rewrite e (x => Equal (N.plus n n) (N.plus x x)) Equal.refl
+
+// 8.0.1
+N.plus_id_exercise (n: Nat) (m: Nat) (o: Nat) (e1: Equal n m) (e2: Equal m o) : Equal (N.plus n m) (N.plus m o)
+N.plus_id_exercise n m o e1 e2 = 
+    let app = Equal.apply (x => N.plus x m) e1
+    Equal.rewrite e2 (x => Equal (N.plus n m) (N.plus m x)) app
+
+N.mult_0_plus (n: Nat) (m: Nat) : Equal (N.mult (N.plus Nat.zero n) m) (N.mult n (N.plus Nat.zero m))
+N.mult_0_plus n m = Equal.refl
+
+// 8.0.2
+N.mult_S_1 (n: Nat) (m: Nat) (e: Equal m (Nat.succ n)) : Equal (N.mult m (N.plus (Nat.succ Nat.zero) n)) (N.mult m m)
+N.mult_S_1 n m e =
+    let app = Equal.apply (x => N.mult m x) e
+    Equal.mirror app
+
+// --------------------------
+// 9. Proof by case analysis
+// --------------------------
+
+N.plus_1_neq_0 (n: Nat) : Equal (Nat.equal (N.plus n (Nat.succ Nat.zero)) Nat.zero) Bool.false
+N.plus_1_neq_0 Nat.zero     = Equal.refl
+N.plus_1_neq_0 (Nat.succ k) = Equal.refl
+
+B.not_involutive (b: Bool) : Equal (B.not (B.not b)) b
+B.not_involutive Bool.false = Equal.refl
+B.not_involutive Bool.true  = Equal.refl
+
+B.andb_commutative (b: Bool) (c: Bool) : Equal (B.and b c) (B.and c b)
+B.andb_commutative Bool.true  Bool.true  = Equal.refl
+B.andb_commutative Bool.true  Bool.false = Equal.refl
+B.andb_commutative Bool.false Bool.true  = Equal.refl
+B.andb_commutative Bool.false Bool.false = Equal.refl
+
+B.andb_commutative_rhs_1 (c:Bool) : Equal c (B.and c Bool.true)
+B.andb_commutative_rhs_1 Bool.true  = Equal.refl
+B.andb_commutative_rhs_1 Bool.false = Equal.refl
+
+B.andb_commutative_rhs_2 (c:Bool) : Equal Bool.false (B.and c Bool.false)
+B.andb_commutative_rhs_2 Bool.true  = Equal.refl
+B.andb_commutative_rhs_2 Bool.false = Equal.refl
+
+B.andb_commutative_ (b: Bool) (c: Bool) : Equal (B.and b c) (B.and c b)
+B.andb_commutative_ Bool.true  c = B.andb_commutative_rhs_1 c
+B.andb_commutative_ Bool.false c = B.andb_commutative_rhs_2 c
+
+// 9.0.1
+B.andb_true_elim_2 (b: Bool) (c: Bool) (e: Equal (B.and b c) Bool.true) : Equal c Bool.true
+B.andb_true_elim_2 Bool.true  c e = e
+B.andb_true_elim_2 Bool.false c e = Empty.absurd (Bool.true_not_false (Equal.mirror e))
+
+//9.0.2
+N.zero_nbeq_plus_1 (n: Nat) : Equal (Nat.equal Nat.zero (N.plus n (Nat.succ Nat.zero))) Bool.false
+N.zero_nbeq_plus_1 Nat.zero     = Equal.refl
+N.zero_nbeq_plus_1 (Nat.succ k) = Equal.refl
+
+
+// --------------------------
+// 11. More exercises
+// --------------------------
+
+// Identity_fn_applied_twice 
+//     (f : Bool -> Bool) 
+//     (e : [x : Bool] Equal (f x) x) 
+//     (b : Bool) 
+// : Equal (f (f b)) b
+
+Andb_eq_orb (b: Bool) (c : Bool) (e: Equal (Bool.and b c) (Bool.or b c)) : Equal b c
+Andb_eq_orb Bool.true c e = Equal.mirror e
+Andb_eq_orb Bool.false c e = e
