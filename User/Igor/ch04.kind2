@@ -1,0 +1,440 @@
+// 1. Pair of numbers
+
+Fst (pair: Pair Nat Nat) : Nat
+Fst (Pair.new Nat Nat x y) = x // Why use p.a, p.b??
+
+Snd (pair: Pair Nat Nat) : Nat
+Snd (Pair.new Nat Nat x y) = y 
+
+Swap_pair (pair: Pair Nat Nat) : Pair Nat Nat
+Swap_pair (Pair.new Nat Nat x y) = Pair.new Nat Nat y x
+
+Surjective_pairing (n: Nat) (m: Nat) : Equal (Pair.new Nat Nat n m) (Pair.new (Fst (Pair.new Nat Nat n m)) (Snd (Pair.new Nat Nat n m))) 
+Surjective_pairing n m = Equal.refl
+
+// 1.1 Exercise
+Snd_fst_is_swap (p: Pair Nat Nat) : Equal (Pair.new Nat Nat (Snd p) (Fst p)) (Swap_pair p)
+Snd_fst_is_swap (Pair.new Nat Nat x y) = Equal.refl
+
+// 1.2 Exercise
+Fst_swap_is_snd (p: Pair Nat Nat) : Equal (Fst (Swap_pair p)) (Snd p)
+Fst_swap_is_snd (Pair.new Nat Nat x y) = Equal.refl
+
+
+// 2.5. Exercises
+
+// 2.5.1. Exercise
+List1 : List Nat
+List1 = (List.cons Nat Nat.zero (List.cons Nat (U60.to_nat 1) (List.cons Nat Nat.zero (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 3) (List.nil Nat))))))
+
+Nonzeros (l: List Nat) : List Nat
+Nonzeros (List.nil Nat)              = List.nil Nat
+Nonzeros (List.cons Nat Nat.zero xs) = Nonzeros xs
+Nonzeros (List.cons Nat x xs)        = List.cons Nat x (Nonzeros xs)
+
+Test_nonzeros : Equal (Nonzeros List1) [(U60.to_nat 1), (U60.to_nat 2), (U60.to_nat 3)]
+Test_nonzeros = Equal.refl
+
+Odd_members (l: List Nat) : List Nat
+Odd_members (List.nil Nat)       = List.nil Nat
+Odd_members (List.cons Nat x xs) = 
+    if (Nat.is_even x) {
+        Odd_members xs
+    } else {
+        (List.cons Nat x (Odd_members xs))
+    }
+
+Test_odd_members : Equal (Odd_members List1) [(U60.to_nat 1), (U60.to_nat 3)]
+Test_odd_members = Equal.refl
+
+Count_odd_members (l: List Nat) : Nat
+Count_odd_members l = List.length (Odd_members l)
+
+Test_count_odd_members : Equal (Count_odd_members List1) (U60.to_nat 2)
+Test_count_odd_members = Equal.refl
+
+
+// 2.5.2. Exercise
+List2 : List Nat
+List2 = List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 3) (List.nil Nat)))
+
+List3 : List Nat
+List3 = List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 5) (List.cons Nat (U60.to_nat 6) (List.nil Nat)))
+
+List4 : List Nat
+List4 = List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 5) (List.cons Nat (U60.to_nat 3) (List.cons Nat (U60.to_nat 6) (List.nil Nat))))))
+
+List5 : List Nat
+List5 = List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 3) (List.nil Nat))))
+
+List6 : List Nat
+List6 = List.cons Nat (U60.to_nat 20) (List.cons Nat (U60.to_nat 30) (List.nil Nat))
+
+Alternate (l1: List Nat) (l2: List Nat) : List Nat
+Alternate xs                   (List.nil Nat)       = xs
+Alternate (List.nil Nat)       ys                   = ys
+Alternate (List.cons Nat x xs) (List.cons Nat y ys) = List.cons Nat x (List.cons Nat y (Alternate xs ys))
+
+Test_alternate1 : Equal (Alternate List2 List3) List4
+Test_alternate1 = Equal.refl
+
+Test_alternate2 : Equal (Alternate (List.cons Nat (U60.to_nat 1) (List.nil Nat)) List3) (List.cons Nat (U60.to_nat 1) List3)
+Test_alternate2 = Equal.refl
+
+Test_alternate3 : Equal (Alternate List2 (List.cons Nat (U60.to_nat 4) (List.nil Nat))) List5
+Test_alternate3 = Equal.refl
+ 
+Test_alternate4 : Equal (Alternate (List.nil Nat) List6) List6
+Test_alternate4  = Equal.refl
+
+
+// 2.6. Bags via lists
+
+// 2.6.1. Exercise
+List7 : List Nat
+List7 = List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 3) (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 1) (List.nil Nat))))))
+
+Count (v: Nat) (l: List Nat) : Nat
+Count v (List.nil Nat)       = Nat.zero
+Count v (List.cons Nat x xs) =
+    if (Nat.equal x v) {
+        Nat.succ (Count v xs)
+    } else {
+        Count v xs
+    }
+
+Test_count1 : Equal (Count (U60.to_nat 1) List7) (U60.to_nat 3)
+Test_count1 = Equal.refl
+
+Test_count2 : Equal (Count (U60.to_nat 6) List7) Nat.zero 
+Test_count2 = Equal.refl
+
+
+Sum (xs: List Nat) (ys : List Nat) : List Nat
+Sum (List.nil Nat)       ys = ys
+Sum (List.cons Nat x xs) ys = List.cons Nat x (Sum xs ys)
+
+List8 : List Nat
+List8 = List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 3) (List.nil Nat)))
+
+List9 : List Nat
+List9 = List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 1) (List.nil Nat)))
+
+Test_sum1 : Equal (Count (U60.to_nat 1) (Sum List8 List9)) (U60.to_nat 3) 
+Test_sum1 = Equal.refl
+
+Add (x: Nat) (xs: List Nat) : List Nat
+Add x xs = List.cons Nat x xs
+
+Test_add1 : Equal (Count (U60.to_nat 1) (Add (U60.to_nat 1) List9)) (U60.to_nat 3)
+Test_add1 = Equal.refl
+
+Test_add2 : Equal (Count (U60.to_nat 5) (Add (U60.to_nat 1) List9)) Nat.zero
+Test_add2 = Equal.refl
+
+Member (n: Nat) (xs: List Nat) : Bool
+Member n (List.nil Nat)       = Bool.false
+Member n (List.cons Nat x xs) =
+    if (Nat.equal n x) { Bool.true } else { Member n xs }
+
+Test_member1 : Equal (Member (U60.to_nat 1) List9) Bool.true
+Test_member1 = Equal.refl
+
+Test_member2 : Equal (Member (U60.to_nat 2) List9) Bool.false
+Test_member2 = Equal.refl
+
+
+// 2.6.2. Exercise
+Remove_one (v: Nat) (s: List Nat) : List Nat
+Remove_one v (List.nil Nat)       = List.nil Nat
+Remove_one v (List.cons Nat x xs) = 
+    if (Nat.equal v x) {
+        xs
+    } else {
+        List.cons Nat x (Remove_one v xs)
+    }
+
+List10 : List Nat
+List10 = List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 5) (List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 1) (List.nil Nat)))))
+
+List11 : List Nat
+List11 = List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 5) (List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 4) (List.nil Nat))))))
+
+List12 : List Nat
+List12 = List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 5) (List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 5) (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 4) (List.nil Nat)))))))
+
+Test_remove_one1 : Equal (Count (U60.to_nat 5) (Remove_one (U60.to_nat 5) List10)) Nat.zero
+Test_remove_one1 = Equal.refl
+
+Test_remove_one2 : Equal (Count (U60.to_nat 5) (Remove_one (U60.to_nat 5) (Remove_one (U60.to_nat 5) List10))) Nat.zero
+Test_remove_one2 = Equal.refl
+
+Test_remove_one3 : Equal (Count (U60.to_nat 4) (Remove_one (U60.to_nat 5) List11)) (U60.to_nat 2)
+Test_remove_one3 = Equal.refl
+
+Test_remove_one4 : Equal (Count (U60.to_nat 5) (Remove_one (U60.to_nat 5) List12)) (U60.to_nat 1)
+Test_remove_one4 = Equal.refl
+
+Remove_all (v: Nat) (xs: List Nat) : List Nat
+Remove_all v (List.nil Nat)       = (List.nil Nat)
+Remove_all v (List.cons Nat x xs) =
+    if (Nat.equal v x) {
+        Remove_all v xs
+    } else {
+        List.cons Nat x (Remove_all v xs)
+    }
+
+Test_remove_all1 : Equal (Count (U60.to_nat 5) (Remove_all (U60.to_nat 5) List10)) Nat.zero
+Test_remove_all1 = Equal.refl
+
+Test_remove_all2 : Equal (Count (U60.to_nat 5) (Remove_all (U60.to_nat 5) (Remove_all (U60.to_nat 5) List10))) Nat.zero
+Test_remove_all2 = Equal.refl
+
+Test_remove_all3 : Equal (Count (U60.to_nat 4) (Remove_all (U60.to_nat 5) List11)) (U60.to_nat 2)
+Test_remove_all3 = Equal.refl
+
+Test_remove_all4 : Equal (Count (U60.to_nat 5) (Remove_all (U60.to_nat 5) List12)) Nat.zero
+Test_remove_all4 = Equal.refl
+
+Subset (xs: List Nat) (ys: List Nat) : Bool
+Subset (List.nil Nat)         ys = Bool.true
+Subset ((List.cons Nat x xs)) ys = 
+    if (Member x ys) {
+        Subset xs (Remove_one x ys)
+    } else {
+        Bool.false
+    }
+
+List13 : List Nat
+List13 = (List.cons Nat (U60.to_nat  1) (List.cons Nat (U60.to_nat  2) (List.nil Nat)))
+
+List14 : List Nat
+List14 = (List.cons Nat (U60.to_nat  2) (List.cons Nat (U60.to_nat  1) (List.cons Nat (U60.to_nat  4) (List.cons Nat (U60.to_nat  1) (List.nil Nat)))))
+
+List15 : List Nat
+List15 = (List.cons Nat (U60.to_nat  1) (List.cons Nat (U60.to_nat  2) (List.cons Nat (U60.to_nat  2) (List.nil Nat))))
+
+Test_subset1 : Equal (Subset List13 List14) Bool.true
+Test_subset1 = Equal.refl
+
+Test_subset2 : Equal (Subset List15 List14) Bool.false
+Test_subset2 = Equal.refl
+
+
+// 2.6.3. Exercise
+Equal_n_n (n: Nat) : Equal (Nat.equal n n) Bool.true
+Equal_n_n Nat.zero     = Equal.refl
+Equal_n_n (Nat.succ k) = Equal_n_n k
+
+Bag_theorem (n: Nat) (l: List Nat) : Equal (Count n (Add n l)) (Nat.succ (Count n l))
+Bag_theorem Nat.zero     ys = Equal.refl
+Bag_theorem (Nat.succ k) ys = Equal.apply (x => Bool.if x (Nat.succ (Count (Nat.succ k) ys)) (Count (Nat.succ k) ys)) (Equal_n_n k) 
+
+
+
+// 3. Reasoning about lists 
+
+App_assoc (xs: List Nat) (ys: List Nat) (zs: List Nat) : Equal (List.concat (List.concat xs ys) zs) (List.concat xs (List.concat ys zs)) 
+App_assoc (List.nil Nat)       ys zs = Equal.refl
+App_assoc (List.cons Nat x xs) ys zs = 
+    let ind = App_assoc xs ys zs
+    Equal.rewrite ind (y => (Equal (List Nat) (List.cons Nat x (List.concat (List.concat xs ys) zs)) (List.cons Nat x y))) Equal.refl
+
+Rev (xs: List Nat) : List Nat
+Rev (List.nil Nat)       = List.nil Nat
+Rev (List.cons Nat x xs) = List.concat Nat (Rev xs) (List.cons x (List.nil Nat))
+
+App_length (xs: List Nat) (ys: List Nat) : Equal (List.length (List.concat xs ys)) (Nat.add (List.length xs) (List.length ys))
+App_length (List.nil Nat)       ys = Equal.refl
+App_length (List.cons Nat x xs) ys = 
+    let ind = App_length xs ys
+    Equal.rewrite ind (x => Equal (Nat.succ (List.length (List.concat xs ys))) (Nat.succ x)) Equal.refl
+
+
+
+// 3.3.1 Exercise
+// l ++ [] = l
+App_nil_r (l: List Nat) : Equal (List.concat l (List.nil Nat)) l
+App_nil_r (List.nil Nat)       = Equal.refl
+App_nil_r (List.cons Nat x xs) = 
+    let ind = App_nil_r xs
+    Equal.rewrite ind (y => (Equal (List.cons x (List.concat xs [])) (List.cons Nat x y))) Equal.refl
+
+
+// rev (l1 ++ l2) == (rev l2) ++ (rev l1)
+Rev_app_distr (l1: List Nat) (l2: List Nat) : Equal (List Nat) (Rev (List.concat Nat l1 l2)) (List.concat Nat (Rev l2) (Rev l1))
+Rev_app_distr (List.nil Nat)       ys = Equal.mirror (App_nil_r (Rev ys))
+Rev_app_distr (List.cons Nat x xs) ys = 
+    let ind = Rev_app_distr xs ys
+    let e0 = App_assoc (Rev ys) (Rev xs) [x]
+    Equal.rewrite (Equal.mirror ind) (z => (Equal (List.concat z [x]) (List.concat (Rev ys) (List.concat (Rev xs) [x])))) e0
+
+
+// rev (rev l) == l
+Rev_involutive (l: List Nat) : Equal (Rev (Rev l)) l
+Rev_involutive (List.nil Nat)       = Equal.refl
+Rev_involutive (List.cons Nat x xs) = 
+    let e0 = Rev_involutive xs
+    let e1 = Equal.apply (y => List.cons Nat x y) e0
+    let e2 = Rev_app_distr (Rev xs) [x]
+    Equal.chain e2 e1
+    
+
+App_assoc4 (l1: List Nat) (l2: List Nat) (l3: List Nat) (l4: List Nat) : Equal (List.concat l1 (List.concat l2 (List.concat l3 l4))) (List.concat (List.concat (List.concat l1 l2) l3) l4)
+App_assoc4 l1 l2 l3 l4 =
+    let e0 = App_assoc l1 l2 (List.concat l3 l4) 
+    Equal.mirror (Equal.rewrite (Equal.mirror (App_assoc (List.concat l1 l2) l3 l4)) (x => Equal x (List.concat l1 (List.concat l2 (List.concat Nat l3 l4)))) e0)
+
+
+// nonzeros (l1 ++ l2) == nonzeros l1 ++ nonzeros l2
+Nonzeros_app (l1: List Nat) (l2: List Nat) : Equal (Nonzeros (List.concat Nat l1 l2)) (List.concat (Nonzeros l1) (Nonzeros l2))
+Nonzeros_app (List.nil Nat)                  ys = Equal.refl
+Nonzeros_app (List.cons Nat Nat.zero xs)     ys = Nonzeros_app xs ys
+Nonzeros_app (List.cons Nat (Nat.succ k) xs) ys = 
+    let e0 = Nonzeros_app xs ys
+    Equal.apply (x => (List.cons Nat (Nat.succ k) x)) e0
+
+
+
+// 3.3.2. Exercise
+Beq_NatList (l1: List Nat) (l2: List Nat) : Bool
+Beq_NatList (List.nil Nat)       (List.nil Nat)       = Bool.true
+Beq_NatList xs                   (List.nil Nat)       = Bool.false
+Beq_NatList (List.nil Nat)       ys                   = Bool.false
+Beq_NatList (List.cons Nat x xs) (List.cons Nat y ys) = Bool.and (Nat.equal x y) (Beq_NatList xs ys)
+
+Test_beq_NatList1 : Equal (Beq_NatList (List.nil Nat) (List.nil Nat)) Bool.true
+Test_beq_NatList1 = Equal.refl
+
+Test_beq_NatList2 : Equal (Beq_NatList List1 List1) Bool.true
+Test_beq_NatList2 = Equal.refl
+
+Test_beq_NatList3 : Equal (Beq_NatList List1 List2) Bool.false
+Test_beq_NatList3 = Equal.refl
+
+Beq_NatList_refl (l: List Nat) : Equal Bool.true (Beq_NatList l l)
+Beq_NatList_refl (List.nil Nat)       = Equal.refl
+Beq_NatList_refl (List.cons Nat x xs) = 
+    let e0 = Beq_NatList_refl xs
+    let e1 = Equal_n_n x
+    let e2 = Equal.apply (y => (Bool.and (Nat.equal x x) y)) e0
+    Equal.rewrite e1 (y => (Equal Bool (Bool.and y Bool.true) (Bool.and (Nat.equal x x) (Beq_NatList xs xs)))) e2
+    
+
+// 3.4.1. Exercise
+Aux1 (n: Nat) : Equal (Nat.lte Nat.zero n) Bool.true
+Aux1 Nat.zero     = Equal.refl
+Aux1 (Nat.succ k) = Equal.refl
+
+// lte 1 (count 1 (1 : s)) == True
+Count_member_nonzero (s: List Nat) : Equal Bool (Nat.lte (U60.to_nat 1) (Count (U60.to_nat 1) (List.cons Nat (U60.to_nat 1) s))) Bool.true 
+Count_member_nonzero s = Aux1 (Count (Nat.succ Nat.zero) s)
+    
+Ble_n_Sn (n: Nat) : Equal (Nat.lte n (Nat.succ n)) Bool.true
+Ble_n_Sn Nat.zero     = Equal.refl
+Ble_n_Sn (Nat.succ k) = Ble_n_Sn k
+
+// lte (count 0 (remove_one 0 s)) (count 0 s) == True
+Remove_decreases_count (l: List Nat) : Equal (Nat.lte (Count Nat.zero (Remove_one Nat.zero l)) (Count Nat.zero l)) Bool.true
+Remove_decreases_count (List.nil Nat)                  = Equal.refl
+Remove_decreases_count (List.cons Nat (Nat.zero) xs)   = Ble_n_Sn (Count Nat.zero xs)
+Remove_decreases_count (List.cons Nat (Nat.succ k) xs) = Remove_decreases_count xs
+
+
+
+// 3.4.2. Exercise
+Bag_count_sum (l1: List Nat) (l2: List Nat) : Equal (Count Nat.zero (Sum l1 l2)) (Nat.add (Count Nat.zero l1) (Count Nat.zero l2))
+Bag_count_sum (List.nil Nat)                  ys = Equal.refl
+Bag_count_sum (List.cons Nat (Nat.zero) xs)   ys = 
+    let e0 = Bag_count_sum xs ys
+    Equal.apply (x => Nat.succ x) e0
+Bag_count_sum (List.cons Nat (Nat.succ k) xs) ys = Bag_count_sum xs ys
+
+// 3.4.3. Exercise
+Rev_injective (l1: List Nat) (l2: List Nat) (e: Equal (Rev l1) (Rev l2)) : Equal l1 l2
+Rev_injective xs ys e = 
+    let e0 = Equal.apply (x => Rev x) e 
+    let e1 = Rev_involutive xs
+    let e2 = Rev_involutive ys
+    let e3 = Equal.rewrite e1 (x => Equal (List Nat) x (Rev (Rev ys))) e0
+    Equal.rewrite e2 (x => Equal (List Nat) xs x) e3
+
+
+// 4.0.1. Exercise
+Hd_error (l: List Nat) : Maybe Nat
+Hd_error (List.nil Nat)       = Maybe.none
+Hd_error (List.cons Nat x xs) = Maybe.some x
+
+Test_hd_error1 : Equal (Hd_error (List.nil Nat)) (Maybe.none)
+Test_hd_error1 = Equal.refl
+
+Test_hd_error2 : Equal (Hd_error (List.cons Nat (U60.to_nat 1) List.nil)) (Maybe.some (U60.to_nat 1))
+Test_hd_error2 = Equal.refl
+
+Test_hd_error3 : Equal (Hd_error List3) (Maybe.some (U60.to_nat 4))
+Test_hd_error3 = Equal.refl
+
+
+
+// 4.0.2. Exercise
+Hd (default: Nat) (l: List Nat) : Nat
+Hd default (List.nil Nat)       = default
+Hd deafult (List.cons Nat x xs) = x
+
+Option_elim <a> (d: a) (o: Maybe a) : a
+Option_elim a d (Maybe.some a_ k) = k
+Option_elim a d (Maybe.none a_)   = d
+
+Option_elim_hd (l: List Nat) (default: Nat) : Equal (Hd default l) (Option_elim default (Hd_error l))
+Option_elim_hd (List.nil Nat)       default = Equal.refl
+Option_elim_hd (List.cons Nat x xs) default = Equal.refl
+
+
+
+// 5. Partial Maps
+Id: Type
+MkId (value: Nat) : Id
+
+Beq_id (x1: Id) (x2: Id):  Bool
+Beq_id (MkId n1) (MkId n2) = Nat.equal n1 n2
+
+// 5.0.1. Exercise
+Beq_id_refl (x: Id) : Equal Bool.true (Beq_id x x)
+Beq_id_refl (MkId Nat.zero)     = Equal.refl
+Beq_id_refl (MkId (Nat.succ k)) = Beq_id_refl (MkId k)
+
+
+
+PartialMap: Type
+Empty: PartialMap
+Record (id: Id) (n: Nat) (p: PartialMap) : PartialMap
+
+Update (d: PartialMap) (x: Id) (value: Nat) : PartialMap
+Update d x value = Record x value d
+
+Find (x: Id) (d: PartialMap) : Maybe Nat
+Find x Empty          = Maybe.none Nat
+Find x (Record y v d) = 
+    if (Beq_id x y) {
+        Maybe.some Nat v
+    } else {
+        Find x d
+    }
+
+
+// 5.0.2. Exercise
+Update_eq (d: PartialMap) (x: Id) (v: Nat) : Equal (Find x (Update d x v)) (Maybe.some v)
+Update_eq d x v = 
+    let e = Equal.mirror (Beq_id_refl x)
+    Equal.apply (y => Bool.if y (Maybe.some Nat v) (Find x d)) e
+
+
+// 5.0.3. Exercise
+Update_neq (d: PartialMap) (x: Id) (y: Id) (o: Nat) (e: Equal (Beq_id x y) Bool.false) : Equal (Find x (Update d y o)) (Find x d)
+Update_neq d x y o e = Equal.apply (z => Bool.if _ z (Maybe.some Nat o) (Find x d)) e
+
+
+
+// 5.0.4. Exercise
+
+

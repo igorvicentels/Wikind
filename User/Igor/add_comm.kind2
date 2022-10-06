@@ -1,0 +1,20 @@
+// Exercicio 1.0.1 Cap 3
+
+Add_n_Z (n: Nat) : Equal n (Nat.add n Nat.zero)
+Add_n_Z Nat.zero     = Equal.refl
+Add_n_Z (Nat.succ k) = 
+    let ind = Add_n_Z k
+    Equal.apply (x => Nat.succ x) ind
+
+Add_n_S (n: Nat) (m: Nat) : Equal (Nat.succ (Nat.add n m)) (Nat.add n (Nat.succ m))
+Add_n_S Nat.zero     m = Equal.refl
+Add_n_S (Nat.succ k) m =
+    let ind = Add_n_S k m
+    Equal.apply (x => Nat.succ x) ind
+
+Add_comm (n: Nat) (m: Nat) : Equal (Nat.add n m) (Nat.add m n)
+Add_comm Nat.zero     m = Add_n_Z m
+Add_comm (Nat.succ k) m = 
+    let ind = Add_comm k m
+    let app = Equal.apply (x => Nat.succ x) ind
+    Equal.chain app (Add_n_S m k)

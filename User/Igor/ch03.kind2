@@ -1,0 +1,139 @@
+Plus_n_Z (n: Nat) : Equal n (Nat.add n Nat.zero)
+Plus_n_Z Nat.zero     = Equal.refl
+Plus_n_Z (Nat.succ k) = 
+    let ind = Plus_n_Z k
+    Equal.apply (x => Nat.succ x) ind
+
+Minus_diag (n: Nat) : Equal (Nat.sub n n) Nat.zero
+Minus_diag Nat.zero     = Equal.refl
+Minus_diag (Nat.succ k) = Minus_diag k
+
+// 1.0.1.
+Mult_0_r (n: Nat) : Equal (Nat.mul n Nat.zero) Nat.zero
+Mult_0_r Nat.zero     = Equal.refl
+Mult_0_r (Nat.succ k) =
+    let ind = Mult_0_r k
+    Equal.apply (x => Nat.add x Nat.zero) ind
+
+Plus_n_Sm (n : Nat) (m: Nat) : Equal (Nat.succ (Nat.add n m)) (Nat.add n (Nat.succ m))
+Plus_n_Sm Nat.zero     m = Equal.refl
+Plus_n_Sm (Nat.succ k) m =
+    let ind = Plus_n_Sm k m 
+    Equal.apply (x => Nat.succ x) ind
+
+Plus_comm (n: Nat) (m: Nat) : Equal (Nat.add n m) (Nat.add m n)
+Plus_comm Nat.zero     m = Plus_n_Z m
+Plus_comm (Nat.succ k) m = 
+    let ind = Plus_comm k m
+    let app = Equal.apply (x => Nat.succ x) ind
+    Equal.chain app (Plus_n_Sm m k)
+
+Plus_assoc (n :Nat) (m: Nat) (p: Nat) : Equal (Nat.add n (Nat.add m p)) (Nat.add (Nat.add n m) p)
+Plus_assoc Nat.zero     m p = Equal.refl
+Plus_assoc (Nat.succ k) m p = 
+    let ind = Plus_assoc k m p
+    Equal.apply (x => Nat.succ x) ind
+
+// 1.0.2
+Double_plus (n: Nat) : Equal (Nat.double n) (Nat.add n n)
+Double_plus Nat.zero     = Equal.refl 
+Double_plus (Nat.succ k) = 
+    let ind = Double_plus k
+    let app = Equal.apply (x => Nat.succ x) ind
+    let chained = Equal.chain app (Plus_n_Sm k k) 
+    Equal.apply (x => Nat.succ x) chained
+
+// 1.0.3 TODO : do it with another def to Nat.is_even
+Evenb_S (n: Nat) : Equal (Nat.is_even (Nat.succ n)) (Bool.not (Nat.is_even n))
+Evenb_S n = Equal.refl
+
+// 3.0.1
+Plus_swap (n: Nat) (m: Nat) (p: Nat) : Equal (Nat.add n (Nat.add m p)) (Nat.add m (Nat.add n p))
+Plus_swap Nat.zero     m p = Equal.refl
+Plus_swap (Nat.succ k) m p = 
+    let ind = Plus_swap k m p
+    let app = Equal.apply (x => Nat.succ x) ind
+    Equal.chain app (Plus_n_Sm m (Nat.add k p))
+
+// TODO: finish it
+Mul_comm_aux (n: Nat) (m: Nat) : Equal (Nat.add (Nat.mul n m) n) (Nat.mul n (Nat.succ m))
+Mul_comm_aux Nat.zero     m = Equal.refl
+Mul_comm_aux (Nat.succ k) m = 
+    let ind = Mul_comm_aux k m
+    let app = Equal.apply (x => Nat.add x (Nat.succ m)) ind
+    Equal.chain (Mul_comm_aux_2 k m) app 
+
+Mul_comm_aux_2 (n: Nat) (m: Nat) : Equal (Nat.add (Nat.add (Nat.mul n m) m) (Nat.succ n)) (Nat.add (Nat.add (Nat.mul n m) n) (Nat.succ m))
+Mul_comm_aux_2 Nat.zero m = 
+    let e1 = Equal.mirror (Plus_n_Sm m Nat.zero)
+    Equal.rewrite (Equal.mirror (Plus_n_Z m)) (x => Equal (Nat.add m (Nat.succ Nat.zero)) (Nat.succ x)) e1
+
+Mul_comm (m: Nat) (n: Nat) : Equal (Nat.mul m n) (Nat.mul n m)
+Mul_comm Nat.zero     n = Equal.mirror (Mult_0_r n)
+Mul_comm (Nat.succ k) n = 
+    let ind = Mul_comm k n
+    let app = Equal.apply (x => Nat.add x n) ind
+    Equal.chain app (Mul_comm_aux n k)
+
+// 3.0.2
+Lte_refl (n: Nat) : Equal Bool.true (Nat.lte n n)
+Lte_refl Nat.zero     = Equal.refl
+Lte_refl (Nat.succ k) = Lte_refl k
+
+Zero_neqb_S (n: Nat) : Equal (Nat.equal Nat.zero (Nat.succ n)) Bool.false
+Zero_neqb_S n = Equal.refl
+
+Andb_false_r (b: Bool) : Equal (Bool.and b Bool.false) Bool.false
+Andb_false_r Bool.true  = Equal.refl
+Andb_false_r Bool.false = Equal.refl
+
+Mult_1_l (n: Nat) : Equal (Nat.mul (Nat.succ Nat.zero) n) n
+Mult_1_l n = Equal.refl
+
+// Plus_ble_compat_l
+
+S_nbeq_0 (n: Nat) : Equal (Nat.equal (Nat.succ n) Nat.zero) Bool.false
+S_nbeq_0 n = Equal.refl
+
+All_3_spec (b: Bool) (c: Bool) : Equal (Bool.or (Bool.and b c) (Bool.or (Bool.not b) (Bool.not c))) Bool.true
+All_3_spec Bool.false c          = Equal.refl  
+All_3_spec Bool.true  Bool.false = Equal.refl  
+All_3_spec Bool.true  Bool.true  = Equal.refl  
+
+
+Mult_plus_distr_r (n: Nat) (m: Nat) (p: Nat) : Equal (Nat.mul (Nat.add n m) p) (Nat.add (Nat.mul n p) (Nat.mul m p))
+Mult_plus_distr_r Nat.zero     m p = Equal.refl
+Mult_plus_distr_r (Nat.succ k) m p = 
+    let ind = Mult_plus_distr_r k m p
+    let app = Equal.apply (x => Nat.add x p) ind
+    let e0 = Plus_comm p (Nat.add (Nat.mul k p) (Nat.mul m p))
+    let e1 = Plus_swap p (Nat.mul k p) (Nat.mul m p)
+    let e2 = Plus_assoc (Nat.mul k p) p (Nat.mul m p)
+    let ch1 = Equal.chain app (Equal.mirror e0)
+    let ch2 = Equal.chain ch1 e1
+    Equal.chain ch2 e2
+
+
+Mult_assoc (n: Nat) (m: Nat) (p: Nat) : Equal (Nat.mul n (Nat.mul m p)) (Nat.mul (Nat.mul n m) p)
+Mult_assoc Nat.zero     m p = Equal.refl
+Mult_assoc (Nat.succ k) m p = 
+    let ind = Mult_assoc k m p
+    let app = Equal.apply (x => Nat.add x (Nat.mul m p)) ind
+    Equal.chain app (Equal.mirror (Mult_plus_distr_r (Nat.mul k m) m p))
+
+
+// 3.0.3
+Beq_nat_refl (n: Nat) : Equal Bool.true (Nat.equal n n)
+Beq_nat_refl Nat.zero     = Equal.refl
+Beq_nat_refl (Nat.succ k) = Beq_nat_refl k
+
+// 3.0.4
+Plus_swap_ (n: Nat) (m: Nat) (p: Nat) : Equal (Nat.add n (Nat.add m p)) (Nat.add m (Nat.add n p))
+Plus_swap_ Nat.zero     m p = Equal.refl
+Plus_swap_ (Nat.succ k) m p = 
+    let ind = Plus_swap_ k m p
+    let app = Equal.apply (x => Nat.succ x) ind
+    let e = Plus_n_Sm m (Nat.add k p)
+    Equal.chain app e
+
+    

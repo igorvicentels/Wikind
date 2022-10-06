@@ -1,0 +1,108 @@
+// Teste1 (a: Nat) (b: Nat) (c: Nat) : Equal (Nat.add a (Nat.add b c)) (Nat.add (Nat.add c a) b)
+// Teste1 a b c = 
+//     let e0 = Nat.add.assoc a b c
+//     let e1 = Equal.rewrite (Nat.add.comm (Nat.add a b) c) (x => Equal (Nat.add a (Nat.add b c)) x) e0
+//     Equal.rewrite (Nat.add.assoc c a b) (x => Equal (Nat.add a (Nat.add b c)) x) e1
+
+Teste1 (a: Nat) (b: Nat) (c: Nat) : Equal (Nat.add a (Nat.add b c)) (Nat.add (Nat.add c a) b)
+Teste1 a b c = Equal.chain (Nat.add.assoc a b c) (Equal.chain (Nat.add.comm (Nat.add a b) c) (Nat.add.assoc c a b))
+
+// reverse (reverse xs) == xs
+Reverse.involution <a> (xs: List a) : Equal (List a) (List.reverse a (List.reverse a xs)) xs
+Reverse.involution a (List.nil a_)       = Equal.refl
+Reverse.involution a (List.cons a_ x xs) = 
+    let ind = Reverse.involution a xs
+    let app = Equal.apply (y => List.cons a_ x y) ind
+// Context: 
+    // goal: reverse.go (reverse.go xs [x]) []       ==  x : xs
+    // ind : reverse.go (reverse.go xs []) []        ==  xs
+    // app : x : (reverse.go (reverse.go xs []) [])  ==  x : xs
+    Equal.chain (Lema1 x xs) app
+
+// reverse.go (reverse.go xs [y]) [] == y : (reverse.go (reverse.go xs []) [])
+Lema1 <a> (y: a) (xs: List a) : Equal (List.reverse.go a (List.reverse.go a xs [y]) []) (List.cons a y (List.reverse.go a (List.reverse.go a xs []) []))
+Lema1 a y (List.nil a_)       = Equal.refl
+// Lema1 a y (List.cons a_ x xs) = 
+//     let ind = Lema1 y xs
+//     let app = Equal.apply (z => List.cons x z) ind
+// Context:
+    // goal = reverse.go (reverse.go xs [x y]) [])) == y : (reverse.go (reverse.go xs [x]) [])
+    // ind = reverse.go (reverse.go xs [y]) [])) == y : (reverse.go (reverse.go xs []) [])
+    // ?
+
+// reverse.go (reverse.go xs []) ys) == xs ++ ys
+Lema2 <a> (xs: List a) (ys: List a) : Equal (List a) (List.reverse.go a (List.reverse.go a xs []) ys) (List.concat xs ys)
+Lema2 a (List.nil a_)       ys = Equal.refl
+// Lema2 a (List.cons a_ x xs) ys = 
+//     let ind = Lema2 a xs ys
+//     let app = Equal.apply (z => List.cons x z) ind
+// // Context:
+//     // goal
+//     // ind: reverse.go (reverso.go xs []) ys          ==    xs ++ ys
+//     // app: (x : (reverse.go (reverse.go xs []) ys))  ==    x : (xs ++ ys) 
+//     ?
+
+// (reverse.go a (reverse.go xs [x]) ys == x : (reverse.go (reverse.go xs []) ys)
+Lema3 <a> (z: a) (xs: List a) (ys: List a) : Equal (List.reverse.go (List.reverse.go xs [z]) ys) (List.cons z (List.reverse.go (List.reverse.go xs []) ys))
+Lema3 a z (List.nil a_)       ys = Equal.refl  
+// Lema3 a z (List.cons a_ x xs) ys = 
+//     let ind = Lema3 a z xs ys
+//     ?
+
+// Aux2 <a> (x: a) (e: a) (xs: List a) : Equal (List.reverse.go a (List.reverse.go a xs [x e]) []) (List.cons a x (List.reverse.go a (List.reverse.go a xs [e]) []))
+// Aux2 a e x (List.nil a_) = Equal.refl 
+
+// z : reverse.go (reverse.go xs []) ys == reverse.go (reverse.go xs [z]) ys
+Lema4 <a> (z: a) (xs: List a) (ys: List a) : Equal (List.cons a z (List.reverse.go a (List.reverse.go a xs []) ys)) (List.reverse.go a (List.reverse.go _ xs [z]) ys)
+Lema4 a z (List.nil a_)       ys = Equal.refl
+// Lema4 a z (List.cons a_ x xs) ys = 
+// Context:
+    // alvo: z : reverse.go (reverse.go xs [x]) ys == reverse.go (reverse.go xs [x, z]) ys
+    // ind: 
+    // let ind = Lema4 a z xs ys
+    // ?
+
+// x : reverse xs == reverse (xs ++ [x])
+Lema5 <a> (z: a) (xs: List a) : Equal (List.cons a z (List.reverse xs)) (List.reverse (List.concat xs (List.cons a z List.nil))) 
+Lema5 a z (List.nil a_)       = Equal.refl
+// Lema5 a z (List.cons a_ x xs) = 
+//     // goal: z : (rev.go xs [x]) == rev.go (xs ++ [z]) [x]
+//     let e0 = Lema5 a z xs
+//     let e1 = Equal.apply (v => List.concat v [x]) e0
+//     ?
+
+
+// (reverse.go xs [y]) == y : Reverse.go xs []
+Lema6 <a> (y: a) (xs: List a) : Equal (List.reverse.go xs (List.cons a y (List.nil a))) (List.cons a y (List.reverse.go a xs (List.nil a)))
+// Lema6 a y (List.nil a_)       = Equal.refl
+// Lema6 a y (List.cons a_ x xs) = 
+//     let e0 = Lema6 a y xs
+//     let e1 = Equal.apply (z => (List.concat z [x])) e0
+//     ?
+
+Lema7 <a> (xs: List a) : Equal (List.reverse.go [] xs) xs
+Lema7 a xs = Equal.refl
+
+// rev xs == Rev xs
+Lema8 <a> (xs: List a) : Equal (List.reverse xs) (Rev xs)
+Lema8 a (List.nil a_)       = Equal.refl
+// Lema8 a (List.cons a_ x xs) = 
+//     let e0 = Lema8 a xs
+//     let e1 = Equal.apply (y => List.concat y [x]) e0
+//     ?
+
+Lema9 <a> (v: a) (xs: List a) : Equal (List.reverse.go a xs [v]) (List.concat a (List.reverse.go a xs []) [v])
+// Lema9 a v (List.nil a_)       = Equal.refl
+// Lema9 a v (List.cons a_ x xs) = 
+//     let e0 = Lema9 a v xs
+//     ?
+
+
+Rev <a> (xs: List a) : List a
+Rev a (List.nil a_)       = List.nil
+Rev a (List.cons a_ x xs) = List.concat (Rev xs) (List.cons x (List.nil a))
+
+// Auxiliar Function
+List.reverse.go <a> (xs: List a) (ys: List a) : List a
+List.reverse.go a (List.nil  a_)      ys = ys
+List.reverse.go a (List.cons a_ x xs) ys = List.reverse.go xs (List.cons x ys)

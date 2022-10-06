@@ -3,69 +3,69 @@ Bool : Type
 Bool.false : Bool
 Bool.true  : Bool
 
-B.not (b: Bool) : Bool
-B.not Bool.false = Bool.true
-B.not Bool.true  = Bool.false
+Bool.not (b: Bool) : Bool
+Bool.not Bool.false = Bool.true
+Bool.not Bool.true  = Bool.false
 
-B.and (b1: Bool) (b2: Bool) : Bool
-B.and Bool.true  b = b
-B.and Bool.false b = Bool.false
+Bool.and (b1: Bool) (b2: Bool) : Bool
+Bool.and Bool.true  b = b
+Bool.and Bool.false b = Bool.false
 
-B.or (b1: Bool) (b2: Bool) : Bool
-B.or Bool.true  b = Bool.true
-B.or Bool.false b = b
+Bool.or (b1: Bool) (b2: Bool) : Bool
+Bool.or Bool.true  b = Bool.true
+Bool.or Bool.false b = b
 
 
 
 // Unit tests
-Test.B.or.1 : Equal (B.or Bool.true Bool.false) Bool.true
-Test.B.or.1 = Equal.refl
+TestOrB1 : Equal (Bool.or Bool.true Bool.false) Bool.true
+TestOrB1 = Equal.refl
 
-Test.B.or.2 : Equal (B.or Bool.false Bool.false) Bool.false
-Test.B.or.2 = Equal.refl
+TestOrB2 : Equal (Bool.or Bool.false Bool.false) Bool.false
+TestOrB2 = Equal.refl
 
-Test.B.or.3 : Equal (B.or Bool.false Bool.true) Bool.true
-Test.B.or.3 = Equal.refl
+TestOrB3 : Equal (Bool.or Bool.false Bool.true) Bool.true
+TestOrB3 = Equal.refl
 
-Test.B.or.4 : Equal (B.or Bool.true Bool.true) Bool.true
-Test.B.or.4 = Equal.refl
+TestOrB4 : Equal (Bool.or Bool.true Bool.true) Bool.true
+TestOrB4 = Equal.refl
 
 
 
 // Exercise 3.0.1
-B.nand (b1: Bool) (b2: Bool) : Bool
-B.nand Bool.false b = Bool.true
-B.nand Bool.true  b = B.not b
+Nandb (b1: Bool) (b2: Bool) : Bool
+Nandb Bool.false b = Bool.true
+Nandb Bool.true  b = Bool.not b
 
-Test.B.nand.1 : Equal (B.nand Bool.true Bool.false) Bool.true
-Test.B.nand.1 = Equal.refl
+Test_nandb1 : Equal (Nandb Bool.true Bool.false) Bool.true
+Test_nandb1 = Equal.refl
 
-Test.B.nand.2 : Equal (B.nand Bool.false Bool.false) Bool.true
-Test.B.nand.2 = Equal.refl
+Test_nandb2 : Equal (Nandb Bool.false Bool.false) Bool.true
+Test_nandb2 = Equal.refl
 
-Test.B.nand.3 : Equal (B.nand Bool.false Bool.true) Bool.true
-Test.B.nand.3 = Equal.refl
+Test_nandb3 : Equal (Nandb Bool.false Bool.true) Bool.true
+Test_nandb3 = Equal.refl
 
-Test.B.nand.4 : Equal (B.nand Bool.true Bool.true) Bool.false
-Test.B.nand.4 = Equal.refl
+Test_nandb4 : Equal (Nandb Bool.true Bool.true) Bool.false
+Test_nandb4 = Equal.refl
 
 
 
-B.and3 (b1: Bool) (b2: Bool) (b3: Bool) : Bool
-B.and3 Bool.true  b2 b3 = B.and b2 b3
-B.and3 Bool.false b2 b3 = Bool.false
+Andb3 (b1: Bool) (b2: Bool) (b3: Bool) : Bool
+Andb3 Bool.true  b2 b3 = Bool.and b2 b3
+Andb3 Bool.false b2 b3 = Bool.false
 
-Test.B.and3.1 : Equal (B.and3 Bool.true Bool.true Bool.true) Bool.true
-Test.B.and3.1 = Equal.refl
+Test_andb31 : Equal (Andb3 Bool.true Bool.true Bool.true) Bool.true
+Test_andb31 = Equal.refl
 
-Test.B.and3.2 : Equal (B.and3 Bool.false Bool.true Bool.true) Bool.false
-Test.B.and3.2 = Equal.refl
+Test_andb32 : Equal (Andb3 Bool.false Bool.true Bool.true) Bool.false
+Test_andb32 = Equal.refl
 
-Test.B.and3.3 : Equal (B.and3 Bool.true Bool.false Bool.true) Bool.false
-Test.B.and3.3 = Equal.refl
+Test_andb33 : Equal (Andb3 Bool.true Bool.false Bool.true) Bool.false
+Test_andb33 = Equal.refl
 
-Test.B.and3.4 : Equal (B.and3 Bool.true Bool.true Bool.false) Bool.false
-Test.B.and3.4 = Equal.refl
+Test_andb34 : Equal (Andb3 Bool.true Bool.true Bool.false) Bool.false
+Test_andb34 = Equal.refl
 
 
 
@@ -83,196 +83,199 @@ Nat.zero: Nat
 Nat.succ (pred: Nat): Nat
 
 
-N.pred (n: Nat): Nat
-N.pred Nat.zero     = Nat.zero
-N.pred (Nat.succ a) = a
+Pred (n: Nat): Nat
+Pred Nat.zero     = Nat.zero
+Pred (Nat.succ a) = a
 
-N.minus_two (n: Nat) : Nat
-N.minus_two Nat.zero                = Nat.zero
-N.minus_two (Nat.succ Nat.zero)     = Nat.zero
-N.minus_two (Nat.succ (Nat.succ a)) = a
+Minus_two (n: Nat) : Nat
+Minus_two Nat.zero                = Nat.zero
+Minus_two (Nat.succ Nat.zero)     = Nat.zero
+Minus_two (Nat.succ (Nat.succ a)) = a
 
-N.even (n: Nat) : Bool
-N.even Nat.zero                = Bool.true
-N.even (Nat.succ Nat.zero)     = Bool.false
-N.even (Nat.succ (Nat.succ a)) = N.even a
+Evenb (n: Nat) : Bool
+Evenb Nat.zero                = Bool.true
+Evenb (Nat.succ Nat.zero)     = Bool.false
+Evenb (Nat.succ (Nat.succ a)) = Evenb a
 
-N.odd (n: Nat) : Bool
-N.odd n = Bool.not (N.even n)
+Oddb (n: Nat) : Bool
+Oddb n = Bool.not (Evenb n)
 
-Test.N.odd.1 : Equal (N.odd (Nat.succ Nat.zero)) Bool.true
-Test.N.odd.1 = Equal.refl
+TestOddb1 : Equal (Oddb (Nat.succ Nat.zero)) Bool.true
+TestOddb1 = Equal.refl
 
-Test.N.odd.2 : Equal (N.odd (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero))))) Bool.false
-Test.N.odd.2 = Equal.refl
+TestOddb2 : Equal (Oddb (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero))))) Bool.false
+TestOddb2 = Equal.refl
 
-N.plus (n: Nat) (m: Nat) : Nat
-N.plus Nat.zero     m = m
-N.plus (Nat.succ k) m = Nat.succ (N.plus k m)
+Plus (n: Nat) (m: Nat) : Nat
+Plus Nat.zero     m = m
+Plus (Nat.succ k) m = Nat.succ (Plus k m)
 
-N.mult (n: Nat) (m: Nat) : Nat
-N.mult Nat.zero     m = Nat.zero
-N.mult (Nat.succ k) m = N.plus m (N.mult k m)
+Mult (n: Nat) (m: Nat) : Nat
+Mult Nat.zero     m = Nat.zero
+Mult (Nat.succ k) m = Plus m (Mult k m)
 
-Test.Mult.1: (Equal (N.mult (U60.to_nat 3) (U60.to_nat 3)) (U60.to_nat 9))
-Test.Mult.1 = Equal.refl
+TestMult1: (Equal (Mult (U60.to_nat 3) (U60.to_nat 3)) (U60.to_nat 9))
+TestMult1 = Equal.refl
 
-N.minus (n: Nat) (m: Nat) : Nat
-N.minus Nat.zero     m            = Nat.zero
-N.minus n            Nat.zero     = n
-N.minus (Nat.succ k) (Nat.succ j) = N.minus k j
+Minus (n: Nat) (m: Nat) : Nat
+Minus Nat.zero     m            = Nat.zero
+Minus n            Nat.zero     = n
+Minus (Nat.succ k) (Nat.succ j) = Minus k j
 
-N.exp (base: Nat) (power: Nat) : Nat
-N.exp base Nat.zero     = Nat.succ Nat.zero
-N.exp base (Nat.succ k) = N.mult base (N.exp base k)
+Exp (base: Nat) (power: Nat) : Nat
+Exp base Nat.zero     = Nat.succ Nat.zero
+Exp base (Nat.succ k) = Mult base (Exp base k)
 
 
 // 6.0.1. Exercise
 
-N.factorial (n: Nat) : Nat
-N.factorial Nat.zero     = Nat.succ Nat.zero
-N.factorial (Nat.succ k) = N.mult (Nat.succ k) (N.factorial k)
+Factorial (n: Nat) : Nat
+Factorial Nat.zero     = Nat.succ Nat.zero
+Factorial (Nat.succ k) = Mult (Nat.succ k) (Factorial k)
 
-Test.N.factorial.1 : 
-    (Equal 
-        (N.factorial (Nat.succ (Nat.succ (Nat.succ Nat.zero)))) 
-        (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero)))))))
-Test.N.factorial.1 = Equal.refl
+TestFactorial1 : Equal (Factorial (U60.to_nat 3)) (U60.to_nat 6)
+TestFactorial1 = Equal.refl
 
-Test.N.factorial.2 : 
+TestFactorial2 : 
     (Equal 
-        (N.factorial (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero)))))
-        (N.mult 
+        (Factorial (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero)))))
+        (Mult 
             (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero))))))
             (Nat.succ (Nat.succ (Nat.succ (Nat.succ Nat.zero))))))
-Test.N.factorial.2 = Equal.refl
+TestFactorial2 = Equal.refl
 
 
-N.equal (n: Nat) (m: Nat) : Bool
-N.equal Nat.zero     Nat.zero     = Bool.true
-N.equal Nat.zero     (Nat.succ j) = Bool.false
-N.equal (Nat.succ k) Nat.zero     = Bool.false
-N.equal (Nat.succ k) (Nat.succ j) = N.equal k j
+Nat.equal (n: Nat) (m: Nat) : Bool
+Nat.equal Nat.zero     Nat.zero     = Bool.true
+Nat.equal Nat.zero     (Nat.succ j) = Bool.false
+Nat.equal (Nat.succ k) Nat.zero     = Bool.false
+Nat.equal (Nat.succ k) (Nat.succ j) = Nat.equal k j
 
-N.lte (n: Nat) (m: Nat) : Bool
-N.lte Nat.zero     m            = Bool.true
-N.lte (Nat.succ k) Nat.zero     = Bool.false
-N.lte (Nat.succ k) (Nat.succ j) = N.lte k j
+Lte (n: Nat) (m: Nat) : Bool
+Lte Nat.zero     m            = Bool.true
+Lte (Nat.succ k) Nat.zero     = Bool.false
+Lte (Nat.succ k) (Nat.succ j) = Lte k j
 
-Test.N.lte.1 : Equal (N.lte (U60.to_nat 2) (U60.to_nat 2)) Bool.true
-Test.N.lte.1 = Equal.refl
+TestLte1 : Equal (Lte (U60.to_nat 2) (U60.to_nat 2)) Bool.true
+TestLte1 = Equal.refl
 
-Test.N.lte.2 : Equal (N.lte (U60.to_nat 2) (U60.to_nat 4)) Bool.true
-Test.N.lte.2 = Equal.refl
+TestLte2 : Equal (Lte (U60.to_nat 2) (U60.to_nat 4)) Bool.true
+TestLte2 = Equal.refl
 
-Test.N.lte.3 : Equal (N.lte (U60.to_nat 4) (U60.to_nat 2)) Bool.false
-Test.N.lte.3 = Equal.refl
+TestLte3 : Equal (Lte (U60.to_nat 4) (U60.to_nat 2)) Bool.false
+TestLte3 = Equal.refl
 
 
 
 // 6.02 Exercises
-N.blt_nat (n: Nat) (m: Nat) : Bool
-N.blt_nat n            Nat.zero     = Bool.false
-N.blt_nat Nat.zero     (Nat.succ j) = Bool.true
-N.blt_nat (Nat.succ k) (Nat.succ j) = N.blt_nat k j
+// Blt_nat (n: Nat) (m: Nat) : Bool
+// Blt_nat n m = ?
 
-Test.N.blt_nat.1 : Equal (N.blt_nat (U60.to_nat 2) (U60.to_nat 2)) Bool.false
-Test.N.blt_nat.1 = Equal.refl
+// Test_blt_nat_1 : Equal (Blt_nat (U60.to_nat 2) (U60.to_nat 2)) Bool.false
+// Test_blt_nat_1 = ?
 
-Test.N.blt_nat.2 : Equal (N.blt_nat (U60.to_nat 2) (U60.to_nat 4)) Bool.true
-Test.N.blt_nat.2 = Equal.refl
+// Test_blt_nat_2 : Equal (Blt_nat (U60.to_nat 2) (U60.to_nat 4)) Bool.true
+// Test_blt_nat_2 = ?
 
-Test.N.blt_nat.3 : Equal (N.blt_nat (U60.to_nat 4) (U60.to_nat 2)) Bool.false
-Test.N.blt_nat.3 = Equal.refl
+// Test_blt_nat_3 : Equal (Blt_nat (U60.to_nat 4) (U60.to_nat 2)) Bool.false
+// Test_blt_nat_3 = ?
 
 
 // --------------------------
 // 7. Proof by simplification
 // --------------------------
 
-N.plus_Z_n (n: Nat) : Equal (N.plus Nat.zero n) n
-N.plus_Z_n n = Equal.refl
+Plus_Z_n (n: Nat) : Equal (Plus Nat.zero n) n
+Plus_Z_n n = Equal.refl
 
-N.plus_1_l (n: Nat) : Equal (N.plus (Nat.succ Nat.zero) n) (Nat.succ n)
-N.plus_1_l n = Equal.refl
+Plus_1_l (n: Nat) : Equal (Plus (Nat.succ Nat.zero) n) (Nat.succ n)
+Plus_1_l n = Equal.refl
 
-N.mult_0_l (n: Nat) : Equal (N.mult Nat.zero n) Nat.zero
-N.mult_0_l n = Equal.refl 
+Mult_0_l (n: Nat) : Equal (Mult Nat.zero n) Nat.zero
+Mult_0_l n = Equal.refl 
 
+// Plus_n_Z (n: Nat) : Equal n (Plus n Nat.zero)
+// Plus_n_Z n = Equal.refl
 
 // --------------------------
 // 8. Proof by rewriting
 // --------------------------
 
-N.plus_id_example (n: Nat) (m: Nat) (e : Equal n m) : Equal (N.plus n n) (N.plus m m)
-N.plus_id_example n m e = Equal.rewrite e (x => Equal (N.plus n n) (N.plus x x)) Equal.refl
+Plus_id_example (n: Nat) (m: Nat) (e : Equal n m) : Equal (Plus n n) (Plus m m)
+Plus_id_example n m e = Equal.rewrite e (x => Equal (Plus n n) (Plus x x)) Equal.refl
 
 // 8.0.1
-N.plus_id_exercise (n: Nat) (m: Nat) (o: Nat) (e1: Equal n m) (e2: Equal m o) : Equal (N.plus n m) (N.plus m o)
-N.plus_id_exercise n m o e1 e2 = 
-    let app = Equal.apply (x => N.plus x m) e1
-    Equal.rewrite e2 (x => Equal (N.plus n m) (N.plus m x)) app
+Plus_id_exercise (n: Nat) (m: Nat) (o: Nat) (e1: Equal n m) (e2: Equal m o) : Equal (Plus n m) (Plus m o)
+Plus_id_exercise n m o e1 e2 = 
+    let app = Equal.apply (x => Plus x m) e1
+    Equal.rewrite e2 (x => Equal (Plus n m) (Plus m x)) app
 
-N.mult_0_plus (n: Nat) (m: Nat) : Equal (N.mult (N.plus Nat.zero n) m) (N.mult n (N.plus Nat.zero m))
-N.mult_0_plus n m = Equal.refl
+Mult_0_plus (n: Nat) (m: Nat) : Equal (Mult (Plus Nat.zero n) m) (Mult n (Plus Nat.zero m))
+Mult_0_plus n m = Equal.refl
 
 // 8.0.2
-N.mult_S_1 (n: Nat) (m: Nat) (e: Equal m (Nat.succ n)) : Equal (N.mult m (N.plus (Nat.succ Nat.zero) n)) (N.mult m m)
-N.mult_S_1 n m e =
-    let app = Equal.apply (x => N.mult m x) e
+Mult_S_1 (n: Nat) (m: Nat) (e: Equal m (Nat.succ n)) : Equal (Mult m (Plus (Nat.succ Nat.zero) n)) (Mult m m)
+Mult_S_1 n m e =
+    let app = Equal.apply (x => Mult m x) e
     Equal.mirror app
 
 // --------------------------
 // 9. Proof by case analysis
 // --------------------------
 
-N.plus_1_neq_0 (n: Nat) : Equal (Nat.equal (N.plus n (Nat.succ Nat.zero)) Nat.zero) Bool.false
-N.plus_1_neq_0 Nat.zero     = Equal.refl
-N.plus_1_neq_0 (Nat.succ k) = Equal.refl
+Plus_1_neq_0 (n: Nat) : Equal (Nat.equal (Plus n (Nat.succ Nat.zero)) Nat.zero) Bool.false
+Plus_1_neq_0 Nat.zero     = Equal.refl
+Plus_1_neq_0 (Nat.succ k) = Equal.refl
 
-B.not_involutive (b: Bool) : Equal (B.not (B.not b)) b
-B.not_involutive Bool.false = Equal.refl
-B.not_involutive Bool.true  = Equal.refl
+Not_involutive (b: Bool) : Equal (Bool.not (Bool.not b)) b
+Not_involutive Bool.false = Equal.refl
+Not_involutive Bool.true  = Equal.refl
 
-B.andb_commutative (b: Bool) (c: Bool) : Equal (B.and b c) (B.and c b)
-B.andb_commutative Bool.true  Bool.true  = Equal.refl
-B.andb_commutative Bool.true  Bool.false = Equal.refl
-B.andb_commutative Bool.false Bool.true  = Equal.refl
-B.andb_commutative Bool.false Bool.false = Equal.refl
+Andb_commutative (b: Bool) (c: Bool) : Equal (Bool.and b c) (Bool.and c b)
+Andb_commutative Bool.true  Bool.true  = Equal.refl
+Andb_commutative Bool.true  Bool.false = Equal.refl
+Andb_commutative Bool.false Bool.true  = Equal.refl
+Andb_commutative Bool.false Bool.false = Equal.refl
 
-B.andb_commutative_rhs_1 (c:Bool) : Equal c (B.and c Bool.true)
-B.andb_commutative_rhs_1 Bool.true  = Equal.refl
-B.andb_commutative_rhs_1 Bool.false = Equal.refl
+Andb_commutative_rhs_1 (c:Bool) : Equal c (Bool.and c Bool.true)
+Andb_commutative_rhs_1 Bool.true  = Equal.refl
+Andb_commutative_rhs_1 Bool.false = Equal.refl
 
-B.andb_commutative_rhs_2 (c:Bool) : Equal Bool.false (B.and c Bool.false)
-B.andb_commutative_rhs_2 Bool.true  = Equal.refl
-B.andb_commutative_rhs_2 Bool.false = Equal.refl
+Andb_commutative_rhs_2 (c:Bool) : Equal Bool.false (Bool.and c Bool.false)
+Andb_commutative_rhs_2 Bool.true  = Equal.refl
+Andb_commutative_rhs_2 Bool.false = Equal.refl
 
-B.andb_commutative_ (b: Bool) (c: Bool) : Equal (B.and b c) (B.and c b)
-B.andb_commutative_ Bool.true  c = B.andb_commutative_rhs_1 c
-B.andb_commutative_ Bool.false c = B.andb_commutative_rhs_2 c
+Andb_commutative_ (b: Bool) (c: Bool) : Equal (Bool.and b c) (Bool.and c b)
+Andb_commutative_ Bool.true  c = Andb_commutative_rhs_1 c
+Andb_commutative_ Bool.false c = Andb_commutative_rhs_2 c
 
 // 9.0.1
-B.andb_true_elim_2 (b: Bool) (c: Bool) (e: Equal (B.and b c) Bool.true) : Equal c Bool.true
-B.andb_true_elim_2 Bool.true  c e = e
-B.andb_true_elim_2 Bool.false c e = Empty.absurd (Bool.true_not_false (Equal.mirror e))
+Andb_true_elim_2 (b: Bool) (c: Bool) (e: Equal (Bool.and b c) Bool.true) : Equal c Bool.true
+Andb_true_elim_2 Bool.true  c e = e
+Andb_true_elim_2 Bool.false c e = Empty.absurd (Bool.true_not_false (Equal.mirror e))
 
 //9.0.2
-N.zero_nbeq_plus_1 (n: Nat) : Equal (Nat.equal Nat.zero (N.plus n (Nat.succ Nat.zero))) Bool.false
-N.zero_nbeq_plus_1 Nat.zero     = Equal.refl
-N.zero_nbeq_plus_1 (Nat.succ k) = Equal.refl
+Zero_nbeq_plus_1 (n: Nat) : Equal (Nat.equal Nat.zero (Plus n (Nat.succ Nat.zero))) Bool.false
+Zero_nbeq_plus_1 Nat.zero     = Equal.refl
+Zero_nbeq_plus_1 (Nat.succ k) = Equal.refl
 
 
 // --------------------------
 // 11. More exercises
 // --------------------------
 
+// 11.0.1
 // Identity_fn_applied_twice 
 //     (f : Bool -> Bool) 
 //     (e : [x : Bool] Equal (f x) x) 
 //     (b : Bool) 
 // : Equal (f (f b)) b
 
+// 11.0.2
 Andb_eq_orb (b: Bool) (c : Bool) (e: Equal (Bool.and b c) (Bool.or b c)) : Equal b c
 Andb_eq_orb Bool.true c e = Equal.mirror e
 Andb_eq_orb Bool.false c e = e
+
+// 11.0.3
+// TODO
+
