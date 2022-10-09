@@ -1,0 +1,156 @@
+// 1.1.1. Exercise
+
+Mumble : Type
+A : Mumble
+B (m: Mumble) (n: Nat) : Mumble 
+C : Mumble
+
+Grumble (x : Type): Type
+D (m: Mumble) (x: Type) : Grumble x
+E (x: Type) :  Grumble x
+
+// TODO
+// • D (B A 5)
+// • D (B A 5) {x=Mumble}
+// • D (B A 5) {x=Bool}
+// • E True {x=Bool}
+// • E (B C 0) {x=Mumble}
+// • E (B C 0) {x=Bool}
+// • C
+
+// 1.1.6. Exercise
+App_nil_r <a> (l: List a) : Equal (List.concat l List.nil) l
+App_nil_r a (List.nil a_)       = Equal.refl
+App_nil_r a (List.cons a_ x xs) = 
+    let ind = App_nil_r a xs
+    Equal.apply (z => List.cons x z) ind
+
+App_assoc <a> (l: List a) (m: List a) (n: List a) : Equal (List.concat l (List.concat m n)) (List.concat (List.concat l m) n)
+App_assoc a (List.nil a_)       ys zs = Equal.refl
+App_assoc a (List.cons a_ x xs) ys zs = 
+    let ind = App_assoc a xs ys zs
+    Equal.apply (s => List.cons x s) ind
+
+App_length <a> (l1: List a) (l2: List a) : Equal (List.length (List.concat l1 l2)) (Nat.add (List.length l1) (List.length l2))
+App_length a (List.nil a_)       ys = Equal.refl
+App_length a (List.cons a_ x xs) ys = 
+    let ind = App_length a xs ys
+    Equal.apply (z => Nat.succ z) ind
+
+// 1.1.7. Exercise
+Rev <a> (xs: List a) : List a
+Rev a (List.nil a_)       = List.nil a
+Rev a (List.cons a_ x xs) = List.concat a (Rev xs) (List.cons a x (List.nil a))
+
+
+Rev_app_distr <a> (l1: List a) (l2: List a) : Equal (Rev (List.concat l1 l2)) (List.concat (Rev l2) (Rev l1))
+Rev_app_distr a (List.nil a_)       ys = Equal.mirror (App_nil_r (Rev ys))
+Rev_app_distr a (List.cons a_ x xs) ys = 
+    let ind = Rev_app_distr a xs ys
+    let app = Equal.apply (z => List.concat z [x]) ind
+    let e = Equal.mirror (App_assoc (Rev ys) (Rev xs) [x])
+    Equal.chain app e
+
+// TODO
+// Rev_involutive <a> (l: List a): Equal (Rev (Rev l)) l
+// Rev_involutive a (List.nil a_)       = Equal.refl
+// Rev_involutive a (List.cons a_ x xs) = 
+//     let ind = Rev_involutive a xs
+//     let e0 = Equal.apply (z => List.cons x z) ind
+//     let e1 = Rev_app_distr (Rev xs) [x]
+//     ?
+    // Equal.rewrite ind (z => (Equal (Rev (List.concat (Rev xs) [x])) (List.cons x z))) e1
+
+// rev ((rev xs) ++ [x]) == x : (rev (rev xs))
+
+
+// 1.2.1. Exercise
+
+// zip <a> <b> (l1: List a) (l2: List b) : List (Pair a b)
+
+// zip [1,2] [False, False, True, True] = [(1, False), (2, False)]
+
+// 1.2.2
+
+Split <a> <b> (l: List (Pair a b)) : Pair (List a) (List b)
+Split a b (List.nil (Pair a_ b_))                            = Pair.new (List a) (List b) (List.nil a) (List.nil b) 
+Split a b (List.cons (Pair a_ b_) (Pair.new a__ b__ x y) xs) = 
+    let outl = Pair.fst (Split a b xs) 
+    let outr = Pair.snd (Split a b xs) 
+    Pair.new (List.cons x outl) (List.cons y outr)
+
+List1 : List (Pair Nat Bool)
+List1 = List.cons (Pair Nat Bool) (Pair.new Nat Bool (Nat.succ Nat.zero) Bool.false) (List.cons (Pair Nat Bool) (Pair.new Nat Bool (Nat.succ (Nat.succ Nat.zero)) Bool.false) (List.nil (Pair Nat Bool)))
+
+Pair1 : Pair (List Nat) (List Bool)
+Pair1 = Pair.new (List Nat) (List Bool) (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 2) (List.nil Nat))) (List.cons Bool Bool.false (List.cons Bool Bool.false (List.nil Bool)))
+
+Test_split: Equal (Split List1) Pair1
+Test_split = Equal.refl
+
+
+// 1.2.4. Exercise
+Hd_error <a> (l: List a) : Maybe a
+Hd_error a (List.nil a_)       = Maybe.none
+Hd_error a (List.cons a_ x xs) = Maybe.some x
+
+Test_hd_error1 : Equal (Hd_error (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 2) (List.nil Nat)))) (Maybe.some (U60.to_nat 1))  
+Test_hd_error1 = Equal.refl
+
+Test_hd_error2 : Equal (Hd_error (List.cons (List Nat) (List.cons Nat (U60.to_nat 1) (List.nil Nat)) (List.cons (List Nat) (List.cons Nat (U60.to_nat 2) (List.nil Nat)) (List.nil (List Nat))))) (Maybe.some (List.cons Nat (U60.to_nat 1) (List.nil Nat))) 
+Test_hd_error2 = Equal.refl
+
+// 2.3.1. Exercise
+Filter_even_gt7 (l: List Nat) : List Nat
+Filter_even_gt7 l = List.filter Nat (List.filter Nat l ((x : Nat) => Nat.gtn x (U60.to_nat 7))) ((x : Nat) => Nat.is_even x) 
+
+List2 : List Nat
+List2 = (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 6) (List.cons Nat (U60.to_nat 9) (List.cons Nat (U60.to_nat 10) (List.cons Nat (U60.to_nat 3) (List.cons Nat (U60.to_nat 12) (List.cons Nat (U60.to_nat 8) (List.nil Nat)))))))))
+
+List3 : List Nat
+List3 = (List.cons Nat (U60.to_nat 10) (List.cons Nat (U60.to_nat 12) (List.cons Nat (U60.to_nat 8) (List.nil Nat))))
+
+Test_filter_even_gt7_1 : Equal (Filter_even_gt7 List2) List3
+Test_filter_even_gt7_1 = Equal.refl
+
+List4 : List Nat
+List4 = (List.cons Nat (U60.to_nat 5) (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 6) (List.cons Nat (U60.to_nat 19) (List.cons Nat (U60.to_nat 129) (List.nil Nat))))))
+
+Test_filter_even_gt7_2 : Equal (Filter_even_gt7 List4) (List.nil Nat)
+Test_filter_even_gt7_2 = Equal.refl
+
+
+// 2.3.2. Exercise
+
+Partition <a> (test: a -> Bool) (l: List a) : Pair (List a) (List a)
+Partition a p (List.nil a_)       = Pair.new (List a) (List a) (List.nil a) (List.nil a)
+Partition a p (List.cons a_ x xs) = 
+    let outl = Pair.fst (Partition a p xs)
+    let outr = Pair.snd (Partition a p xs)
+    Bool.if (p x) (Pair.new (List a) (List a) (List.cons a x outl) outr) (Pair.new (List a) (List a) outl (List.cons a x outr))
+
+
+List5 : List Nat
+List5 = (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 3) (List.cons Nat (U60.to_nat 4) (List.cons Nat (U60.to_nat 5) (List.nil Nat))))))
+
+List6 : List Nat
+List6 = (List.cons Nat (U60.to_nat 1) (List.cons Nat (U60.to_nat 3) (List.cons Nat (U60.to_nat 5) (List.nil Nat))))
+
+List7 : List Nat
+List7 = (List.cons Nat (U60.to_nat 2) (List.cons Nat (U60.to_nat 4) (List.nil Nat)))
+
+List8 : List Nat
+List8 = (List.cons Nat (U60.to_nat 5) (List.cons Nat (U60.to_nat 9) (List.cons Nat (U60.to_nat 0) (List.nil Nat))))
+
+Test_partition1 : Equal (Partition ((x: Nat) => Nat.is_odd x) List5) (Pair.new List6 List7)
+Test_partition1 = Equal.refl
+
+// TODO: check why Bool.false break the test 
+Test_partition2 : Equal (Partition ((x: Nat) => Bool.true) List8) (Pair.new List8 List.nil)
+Test_partition2 = Equal.refl
+
+
+// 2.4.1. Exercise
+
+Map_rev <a> <b> (f: a -> b) (l: List a) : Equal (List.map (Rev l) f) (Rev (List.map l f))
+Map_rev a b f l = ?

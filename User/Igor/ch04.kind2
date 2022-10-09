@@ -438,3 +438,20 @@ Update_neq d x y o e = Equal.apply (z => Bool.if _ z (Maybe.some Nat o) (Find x 
 // 5.0.4. Exercise
 
 
+
+
+
+
+
+
+
+// Alternative version of 
+
+Listl <a> (xs: List a): Equal Nat (List.length(List.reverse xs)) (List.length xs)
+Listl a (List.nil a_)       = Equal.refl
+Listl a (List.cons a_ x xs) = Listl2 (List.cons a x xs)
+
+
+Listl2 <a> (xs: List a) : Equal Nat (List.length(List.reverse.go xs [])) (Nat.add (List.length []) (List.length xs))
+Listl2 a (List.nil a_)       = Equal.refl
+Listl2 a (List.cons a_ x xs) = ?

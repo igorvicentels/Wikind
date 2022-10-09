@@ -137,3 +137,16 @@ Plus_swap_ (Nat.succ k) m p =
     Equal.chain app e
 
     
+
+Listl <a> (xs: List a): Equal Nat (List.length(List.reverse xs)) (List.length xs)
+Listl a (List.nil a_)       = Equal.refl
+Listl a (List.cons a_ x xs) = List2 (List.cons a x xs)
+    // let e1 = Equal.mirror (Plus_n_Z (List.length _ xs))
+    // Equal.rewrite e1 (z => (Equal Nat (List.length _ (List.reverse.go _ xs [x])) (Nat.succ z))) e0
+
+
+List2 <a> (xs: List a) : Equal Nat (List.length(List.reverse.go xs [])) (Nat.add (List.length []) (List.length xs))
+List2 a (List.nil a_)       = Equal.refl
+// List2 a (List.cons a_ x xs) = 
+//     let ind = List2 a xs 
+//     ?
